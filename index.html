@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arabic Quiz App (26-50)</title>
+    <title>Arabic Quiz App (26-50) Full Pack</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fcf8f2;
+            background-color: #f4f7f6;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -19,23 +19,50 @@
             background-color: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            max-width: 500px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 550px;
             width: 100%;
             text-align: center;
             margin: auto;
         }
-        h2 { color: #2c3e50; margin-bottom: 5px; font-size: 22px; }
+        h2 { color: #2c3e50; margin-bottom: 5px; font-size: 24px; }
         .progress { color: #7f8c8d; font-size: 14px; margin-bottom: 25px; }
         .question-box {
             background-color: #fdfaf6;
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border-left: 5px solid #d35400;
+            border-left: 5px solid #2ecc71;
         }
-        .type-label { font-size: 14px; color: #e67e22; font-weight: bold; text-transform: uppercase; }
+        .type-label { font-size: 14px; color: #27ae60; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
         .word { font-size: 36px; font-weight: bold; margin: 15px 0; color: #2c3e50; direction: rtl; }
+        
+        /* สไตล์สำหรับตารางแสดง 3 ช่องแบบชัดเจน */
+        .verb-table {
+            width: 100%;
+            margin: 15px 0;
+            border-collapse: collapse;
+            direction: rtl;
+        }
+        .verb-table th, .verb-table td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: center;
+            font-size: 20px;
+        }
+        .verb-table th {
+            background-color: #f1f2f6;
+            font-size: 14px;
+            color: #57606f;
+            font-weight: bold;
+        }
+        .th-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            display: block;
+            margin-top: 2px;
+        }
+
         .input-answer {
             width: 100%;
             padding: 12px;
@@ -47,7 +74,7 @@
             text-align: center;
         }
         .btn {
-            background-color: #e67e22;
+            background-color: #2ecc71;
             color: white;
             border: none;
             padding: 12px 25px;
@@ -58,93 +85,117 @@
             font-weight: bold;
             transition: background 0.2s;
         }
-        .btn:hover { background-color: #d35400; }
+        .btn:hover { background-color: #27ae60; }
         .btn-secondary { background-color: #3498db; margin-top: 10px; }
         .btn-secondary:hover { background-color: #2980b9; }
         .result {
             margin-top: 20px;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             font-weight: bold;
             display: none;
+            text-align: center;
         }
-        .correct { background-color: #d4edda; color: #155724; }
-        .wrong { background-color: #f8d7da; color: #721c24; }
-        .score-view { font-size: 24px; color: #2c3e50; font-weight: bold; }
+        .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .score-view { font-size: 26px; color: #2c3e50; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
     <h2>Arabic Quiz (คำที่ 26-50)</h2>
-    <div class="progress" id="progress">ข้อที่ 1/10</div>
+    <div class="progress" id="progress">ข้อที่ 1/25</div>
 
     <div id="quiz-box">
         <div class="question-box">
             <div class="type-label" id="direction-label">แปลเป็นภาษาไทย</div>
-            <div class="word" id="question-word">فَتَحَ</div>
+            <div id="question-display">
+                </div>
         </div>
-        <input type="text" id="user-answer" class="input-answer" placeholder="พิมพ์คำตอบที่นี่ (หรือกดตรวจเพื่อดูเฉลย)" autocomplete="off">
+        <input type="text" id="user-answer" class="input-answer" placeholder="พิมพ์คำตอบที่นี่ แล้วกด Enter หรือคลิกตรวจคำตอบ" autocomplete="off">
         <button class="btn" id="action-btn" onclick="checkAnswer()">ตรวจคำตอบ</button>
         <div class="result" id="result-box"></div>
     </div>
 
     <div id="score-box" style="display: none;">
-        <p class="score-view" id="final-score">คุณได้คะแนน 0/10</p>
-        <button class="btn btn-secondary" onclick="restartQuiz()">เริ่มเล่นใหม่</button>
+        <p class="score-view" id="final-score">คุณได้คะแนน 0/25</p>
+        <button class="btn btn-secondary" onclick="restartQuiz()">เริ่มเล่นใหม่อีกรอบ</button>
     </div>
 </div>
 
 <script>
-    // ข้อมูลคำศัพท์ลำดับที่ 26-50 จากรูปภาพจริงที่ส่งมาล่าสุด
+    // ข้อมูลตารางคำศัพท์ลำดับที่ 26-50 แบบครบ 3 ช่อง (อดีต, ปัจจุบัน, อาการนาม) ตรงตามรูปภาพ
     const vocabData = [
-        { id: 26, ar: "فَتَحَ", th: "เปิด" },
-        { id: 27, ar: "غَلَقَ", th: "ปิด" },
-        { id: 28, ar: "لَبِسَ", th: "สวมใส่" },
-        { id: 29, ar: "خَلَعَ", th: "ถอด" },
-        { id: 30, ar: "رَفَعَ", th: "ยก" },
-        { id: 31, ar: "وَضَعَ", th: "วาง" },
-        { id: 32, ar: "سَمِعَ", th: "ได้ยิน" },
-        { id: 33, ar: "فَعَلَ", th: "กระทำ" },
-        { id: 34, ar: "عَمِلَ", th: "ทำงาน" },
-        { id: 35, ar: "جَعَلَ", th: "ทำ, เริ่ม" },
-        { id: 36, ar: "جَمَعَ", th: "รวบรวม" },
-        { id: 37, ar: "سَأَلَ", th: "ขอ, ถาม" },
-        { id: 38, ar: "حَكَمَ", th: "ตัดสิน" },
-        { id: 39, ar: "مَنَحَ", th: "ให้" },
-        { id: 40, ar: "وَهَبَ", th: "ให้" },
-        { id: 41, ar: "قَبِلَ", th: "รับ" },
-        { id: 42, ar: "أَخَذَ", th: "เอา" },
-        { id: 43, ar: "نَظَرَ", th: "มองดู" },
-        { id: 44, ar: "عَقَلَ", th: "ใช้ปัญญา" },
-        { id: 45, ar: "بَصَرَ", th: "มองเห็น, รับรู้" },
-        { id: 46, ar: "رَأَى", th: "เห็น" },
-        { id: 47, ar: "قَرَأَ", th: "อ่าน" },
-        { id: 48, ar: "كَتَبَ", th: "เขียน" },
-        { id: 49, ar: "مَحَا", th: "ลบ" },
-        { id: 50, ar: "مَسَحَ", th: "ลบ, ลูบ" }
+        { id: 26, past: "فَتَحَ", present: "يَفْتَحُ", masdar: "فَتْحٌ", th: "เปิด" },
+        { id: 27, past: "غَلَقَ", th: "ปิด", present: "يَغْلِقُ", masdar: "غَلْقٌ" }, // สังเกตจากรูปสะกดคลาดเคลื่อนเล็กน้อยในใบงาน อิงตามรูป: غَلَقَ - يَغْلِقُ - غَلْقٌ
+        { id: 28, past: "لَبِسَ", present: "يَلْبَسُ", masdar: "لُبْسٌ", th: "สวมใส่" },
+        { id: 29, past: "خَلَعَ", present: "يَخْلَعُ", masdar: "خَلْعٌ", th: "ถอด" },
+        { id: 30, past: "رَفَعَ", present: "يَرْفَعُ", masdar: "رَفْعٌ", th: "ยก" },
+        { id: 31, past: "وَضَعَ", present: "يَضَعُ", masdar: "وَضْعٌ", th: "วาง" },
+        { id: 32, past: "سَمِعَ", present: "يَسْمَعُ", masdar: "سَمْعٌ", th: "ได้ยิน" },
+        { id: 33, past: "فَعَلَ", present: "يَفْعَلُ", masdar: "فِعْلٌ", th: "กระทำ" },
+        { id: 34, past: "عَمِلَ", present: "يَعْمَلُ", masdar: "عَمَلٌ", th: "ทำงาน" },
+        { id: 35, past: "جَعَلَ", present: "يَجْعَلُ", masdar: "جَعْلٌ", th: "ทำ, เริ่ม" },
+        { id: 36, past: "جَمَعَ", present: "يَجْمَعُ", masdar: "جَمْعٌ", th: "รวบรวม" },
+        { id: 37, past: "سَأَلَ", present: "يَسْأَلُ", masdar: "سُؤَالٌ", th: "ขอ, ถาม" },
+        { id: 38, past: "حَكَمَ", present: "يَحْكُمُ", masdar: "حُكْمٌ", th: "ตัดสิน" },
+        { id: 39, past: "مَنَحَ", present: "يَمْنَحُ", masdar: "مَنْحٌ", th: "ให้" },
+        { id: 40, past: "وَهَبَ", present: "يَهَبُ", masdar: "وَهْبٌ", th: "ให้" },
+        { id: 41, past: "قَبِلَ", present: "يَقْبَلُ", masdar: "قَبُولٌ", th: "รับ" },
+        { id: 42, past: "أَخَذَ", present: "يَأْخُذُ", masdar: "أَخْذٌ", th: "เอา" },
+        { id: 43, past: "نَظَرَ", present: "يَنْظُرُ", masdar: "نَظَرٌ", th: "มองดู" },
+        { id: 44, past: "عَقَلَ", present: "يَعْقِلُ", masdar: "عَقْلٌ", th: "ใช้ปัญญา" },
+        { id: 45, past: "بَصَرَ", present: "يُبْصِرُ", masdar: "بَصَرٌ", th: "มองเห็น, รับรู้" },
+        { id: 46, past: "رَأَى", present: "يَرَى", masdar: "رُؤْيَةٌ", th: "เห็น" }, // สะกดอาการนาม รุอ์ยะฮ์ ตามตาราง رَأْيٌ ในเอกสาร
+        { id: 47, past: "قَرَأَ", present: "يَقْرَأُ", masdar: "قِرَاءَةٌ", th: "อ่าน" },
+        { id: 48, past: "كَتَبَ", present: "يَكْتُبُ", masdar: "كِتَابَةٌ", th: "เขียน" },
+        { id: 49, past: "مَحَا", present: "يَمْحُو", masdar: "مَحْوٌ", th: "ลบ" },
+        { id: 50, past: "مَسَحَ", present: "يَمْسَحُ", masdar: "مَسْحٌ", th: "ลบ, ลูบ" }
     ];
 
     let currentQuestions = [];
     let currentIndex = 0;
     let score = 0;
     let isShowingAnswer = false;
-    const totalQuestions = 10; // สุ่มมาเล่นทีละ 10 ข้อต่อรอบ
+    const totalQuestions = 25; // เล่นให้ครบทั้ง 25 คำในตาราง
 
     function startQuiz() {
+        // สุ่มสลับตำแหน่งคำถามทั้งหมด 25 คำ
         let shuffled = [...vocabData].sort(() => 0.5 - Math.random());
-        currentQuestions = shuffled.slice(0, totalQuestions).map(item => {
-            let isArToTh = Math.random() > 0.5; // สุ่มรูปแบบคำถาม (อาหรับ->ไทย หรือ ไทย->อาหรับ)
+        currentQuestions = shuffled.map(item => {
+            let isArToTh = Math.random() > 0.5;
             return {
-                word: isArToTh ? item.ar : item.th,
-                correctAnswer: isArToTh ? item.th : item.ar,
-                type: isArToTh ? "แปลเป็นภาษาไทย" : "แปลเป็นภาษาอาหรับ (กริยาอดีต)"
+                rawData: item,
+                isArToTh: isArToTh,
+                type: isArToTh ? "จงแปลกลุ่มคำอาหรับนี้เป็นภาษาไทย" : "จงพิมพ์คำกริยาช่องอดีต (ช่องที่ 1) ให้ตรงกับความหมาย"
             };
         });
         currentIndex = 0;
         score = 0;
         isShowingAnswer = false;
         showQuestion();
+    }
+
+    function generateArabicTableHTML(past, present, masdar) {
+        return `
+            <table class="verb-table">
+                <thead>
+                    <tr>
+                        <th>อดีต <span class="th-label">(مَاضٍ)</span></th>
+                        <th>ปัจจุบัน <span class="th-label">(مُضَارِع)</span></th>
+                        <th>อาการนาม <span class="th-label">(مَصْدَر)</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${past}</td>
+                        <td>${present}</td>
+                        <td>${masdar}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
     }
 
     function showQuestion() {
@@ -155,7 +206,16 @@
             
             let q = currentQuestions[currentIndex];
             document.getElementById("direction-label").innerText = q.type;
-            document.getElementById("question-word").innerText = q.word;
+            
+            let displayBox = document.getElementById("question-display");
+            if (q.isArToTh) {
+                // ถ้าถามอาหรับ -> ให้ขึ้นตาราง 3 ช่องให้ดูแล้วให้ทายความหมายภาษาไทย
+                displayBox.innerHTML = generateArabicTableHTML(q.rawData.past, q.rawData.present, q.rawData.masdar);
+            } else {
+                // ถ้าถามไทย -> ให้ขึ้นคำแปลภาษาไทยตัวโตๆ
+                displayBox.innerHTML = `<div class="word" style="direction: ltr;">"${q.rawData.th}"</div>`;
+            }
+
             document.getElementById("user-answer").value = "";
             document.getElementById("result-box").style.display = "none";
             document.getElementById("action-btn").innerText = "ตรวจคำตอบ";
@@ -163,8 +223,8 @@
         } else {
             document.getElementById("quiz-box").style.display = "none";
             document.getElementById("score-box").style.display = "block";
-            document.getElementById("progress").innerText = "ทำแบบทดสอบเซ็ตนี้เสร็จแล้ว!";
-            document.getElementById("final-score").innerText = `คุณได้คะแนน ${score}/${totalQuestions}`;
+            document.getElementById("progress").innerText = "ยอดเยี่ยม! คุณทบทวนครบทั้ง 25 คำแล้ว";
+            document.getElementById("final-score").innerText = `คะแนนของคุณคือ ${score}/${totalQuestions}`;
         }
     }
 
@@ -175,17 +235,40 @@
         let userAns = document.getElementById("user-answer").value.trim();
 
         if (!isShowingAnswer) {
-            // ระบบช่วยตรวจความถูกค้องขั้นพื้นฐาน
-            let isCorrect = userAns === q.correctAnswer || q.correctAnswer.includes(userAns) && userAns !== "";
+            let isCorrect = false;
+            let targetAnswer = "";
+
+            if (q.isArToTh) {
+                // คำตอบที่ถูกต้องคือภาษาไทย (ยอมรับการตอบคำใดคำหนึ่งหากมีคอมมาแยก)
+                targetAnswer = q.rawData.th;
+                isCorrect = targetAnswer.includes(userAns) && userAns !== "";
+            } else {
+                // คำตอบที่ถูกต้องคือภาษาอาหรับช่องอดีต
+                targetAnswer = q.rawData.past;
+                // ตรวจคำตอบแบบลบสระ (Tashkeel) ออกชั่วคราว เพื่อไม่ให้ผู้เรียนพิมพ์ยากเกินไปเมื่อเจอสระซับซ้อน
+                let cleanUserAns = userAns.replace(/[\u064B-\u0652]/g, "");
+                let cleanTarget = targetAnswer.replace(/[\u064B-\u0652]/g, "");
+                isCorrect = (cleanUserAns === cleanTarget && userAns !== "");
+            }
             
             if (isCorrect) {
                 resultBox.className = "result correct";
-                resultBox.innerHTML = `ถูกต้องเก่งมาก! 🎉 <br>คำตอบคือ: ${q.correctAnswer}`;
+                resultBox.innerHTML = `🎉 ถูกต้องแม่นยำ!`;
                 score++;
             } else {
                 resultBox.className = "result wrong";
-                resultBox.innerHTML = `ยังไม่ถูกน้า ไม่เป็นไรท่องใหม่ข้อหน้า! <br>เฉลยคำตอบคือ: <strong>${q.correctAnswer}</strong>`;
+                resultBox.innerHTML = `หนทางสู่ความสำเร็จต้องฝึกฝนต่อ!`;
             }
+
+            // แสดงตารางข้อมูลและเฉลยสรุปตัวโตๆ ด้านล่างหลังกดตรวจเสมอ
+            resultBox.innerHTML += `
+                <div style="margin-top: 15px; text-align: left; direction: ltr;">
+                    <strong>ความหมายภาษาไทย:</strong> ${q.rawData.th}<br>
+                    <strong>ตารางคำศัพท์ประกอบ:</strong>
+                </div>
+                ${generateArabicTableHTML(q.rawData.past, q.rawData.present, q.rawData.masdar)}
+            `;
+
             resultBox.style.display = "block";
             actionBtn.innerText = "ทำข้อถัดไป ->";
             isShowingAnswer = true;
@@ -199,7 +282,6 @@
         startQuiz();
     }
 
-    // รองรับการกด Enter เพื่อตรวจคำตอบ
     document.getElementById("user-answer").addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
             checkAnswer();
